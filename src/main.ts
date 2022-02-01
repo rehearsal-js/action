@@ -1,19 +1,32 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import { getInput, setFailed } from '@actions/core';
+import { TS } from '@rehearsal/cli';
+
+// inputs available from action.yml
+const INPUTS = ['autofix', 'build', 'dry_run', 'src_dir', 'tsc_version'];
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    const inputValues = getInputValues();
+    await TS.run(inputValues);
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      setFailed(error.message);
+    }
   }
 }
 
-run()
+function getInputValues(): string[] {
+  const flags: string[] = [];
+
+  INPUTS.forEach((input) => {
+    // get the yml input value
+    const inputValue = getInput(input, { required: false });
+    if (inputValue) {
+      flags.push(`--${input}`, inputValue);
+    }
+  });
+
+  return flags;
+}
+
+run();

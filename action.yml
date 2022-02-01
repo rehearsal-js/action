@@ -1,11 +1,23 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: '@rehearsal/action'
+description: 'Setup @rehearsal/cli typescript command for usage in your CI runs'
+author: 'Marc Lynch <lynchmarc2@gmail.com>'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  autofix:
+    required: false
+    description: 'autofix tsc errors where available'
+  build:
+    required: false
+    description: 'typescript build variant. beta|next|latest'
+  dry_run:
+    required: false
+    description: 'dry run. dont commit any changes. reporting only.'
+  src_dir:
+    required: false
+    description: 'typescript source directory'
+  tsc_version:
+    required: false
+    description: 'override the build variant by specifying the typescript compiler version as n.n.n'
+
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
