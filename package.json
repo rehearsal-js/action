@@ -1,0 +1,51 @@
+{
+  "name": "@rehearsal/action",
+  "version": "0.0.30",
+  "description": "Rehearsal JS GitHub Action",
+  "keywords": [
+    "rehearsal",
+    "dependency",
+    "dependencies",
+    "typescript",
+    "action"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rehearsal-js/rehearsal-js.git"
+  },
+  "license": "BSD-2-Clause",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "tsc --noEmit & eslint --fix . --ext .ts",
+    "lint:eslint": "",
+    "lint:tsc-src": "",
+    "test": "vitest --run",
+    "test:watch": "vitest --coverage --watch"
+  },
+  "dependencies": {
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.0.3",
+    "@rehearsal/cli": "^0.0.30",
+    "typescript": "^4.8.2"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.4.1",
+    "@types/node": "^18.7.14",
+    "@vitest/coverage-c8": "^0.22.1",
+    "eslint": "^8.23.0",
+    "vitest": "^0.22.1"
+  },
+  "engines": {
+    "node": ">=14.16.0"
+  },
+  "volta": {
+    "node": "16.17.0",
+    "yarn": "1.22.17"
+  }
+}
