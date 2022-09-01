@@ -1,0 +1,4 @@
+*.config.js
+dist
+docs
+node_modules
