@@ -1,0 +1,13 @@
+name: 'Rehearsal Upgrade Action'
+description: 'Run Rehearsal to update your project to support the latest version of TypeScript'
+branding: 
+  icon: check-circle
+  color: blue
+inputs:
+  src_dir:
+    required: false
+    description: 'typescript source directory'
+
+runs:
+  using: 'node16'
+  main: 'dist/src/index.js'
