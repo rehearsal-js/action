@@ -1,0 +1,35 @@
+name: 'Rehearsal TypeScript Upgrade Action'
+description: 'Run Rehearsal to upgrade the project to support the latest version of TypeScript'
+
+branding: 
+  icon: check-circle
+  color: blue
+
+inputs:
+  github-token:
+    description: 'GitHub authentication token (https://docs.github.com/en/authentication)'
+    required: true
+  base-path:
+    description: 'Application base path (contains tsconfig.json)'
+    default: '.'
+    required: false
+  git-user-name:
+    description: 'Git commit user name'
+    default: 'rehearsal[bot]'
+    required: false
+  git-user-email:
+    description: 'Git commit user email'
+    default: '<>'
+    required: false
+  pull-request-branch:
+    description: 'Branch name to use in Pull Request'
+    default: 'rehearsal-bot/upgrade'
+    required: false
+  pull-request-draft:
+    description: 'Create a draft Pull Request'
+    default: false
+    required: false
+
+runs:
+  using: 'node16'
+  main: 'bin/index.js'
