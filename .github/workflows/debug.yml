@@ -1,0 +1,15 @@
+name: Rehearsal TS Upgrade (DEBUG) 
+on:
+  workflow_dispatch:
+
+jobs:
+  test_action:
+    name: Run Upgrade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-path: './test'
+      - uses: lhotari/action-upterm@v1
