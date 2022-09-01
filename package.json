@@ -1,0 +1,61 @@
+{
+  "name": "@rehearsal/action",
+  "version": "0.0.1",
+  "description": "RehearsalJS GitHub Action",
+  "keywords": [
+    "rehearsal",
+    "dependency",
+    "dependencies",
+    "typescript",
+    "action"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rehearsal-js/action.git"
+  },
+  "license": "BSD-2-Clause",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -b && ncc build dist/src/index.js --out=bin",
+    "lint": "tsc --noEmit && eslint --fix src",
+    "test": "vitest --run"
+  },
+  
+  
+  "dependencies": {
+    "@actions/core": "^1.9.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/github": "^5.0.3",
+    "@actions/glob": "^0.3.0",
+    "@octokit/core": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.4.6",
+    "@types/node": "^18.7.18",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "@vercel/ncc": "^0.34.0",
+    "@vitest/coverage-c8": "^0.23.4",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-filenames": "^1.3.2",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "8.0.0",
+    "prettier": "^2.7.1",
+    "typescript": "4.7.4",
+    "vitest": "^0.23.4"
+  },
+  "engines": {
+    "node": ">=14.16.0"
+  },
+  "volta": {
+    "node": "16.17.0",
+    "yarn": "1.22.17"
+  }
+}

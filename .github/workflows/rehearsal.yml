@@ -1,0 +1,16 @@
+name: Rehearsal TypeScript Upgrade 
+on:
+  workflow_dispatch:
+  push:
+    branches: ['master']
+
+jobs:
+  test_action:
+    name: Run Upgrade
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-path: './test'
