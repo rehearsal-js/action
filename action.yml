@@ -1,0 +1,24 @@
+name: 'Rehearsal Upgrade Action'
+description: 'Run Rehearsal to update your project to support the latest version of TypeScript'
+
+branding: 
+  icon: check-circle
+  color: blue
+
+inputs:
+  github-token:
+    required: true
+    description: 'GitHub Token'
+  base-path:
+    required: false
+    description: 'Application Base Path'
+  git-user-name:
+    required: false
+    description: 'Git User Name'
+  git-user-email:
+    required: false
+    description: 'Git User Email'
+  
+runs:
+  using: 'node16'
+  main: 'bin/index.js'
