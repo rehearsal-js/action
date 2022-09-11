@@ -12,6 +12,9 @@ export async function run(): Promise<void> {
 
   try {
     console.log(execaSync('yarn', ['install']).stdout); // OR NPM
+
+    console.log(execaSync('ls', ['-ls']).stdout);
+
     console.log(execaSync('git', ['config', 'user.name', gitUserName]).stdout);
     console.log(execaSync('git', ['config', 'user.email', gitUserEmail]).stdout);
 
