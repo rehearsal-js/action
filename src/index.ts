@@ -12,6 +12,7 @@ export function run(): void {
   const gitUserEmail = getInput('git_user_email') || 'rehearsal[bot]@users.noreply.github.com';
 
   try {
+    console.log('987654321');
     console.log(execaSync('yarn', ['install']).stdout); // OR NPM
 
     console.log(execaSync('ls', ['-la']).stdout);
@@ -27,7 +28,7 @@ export function run(): void {
     try {
       rehearsal.parse(['node', 'rehearsal', 'upgrade', '--src_dir', resolve(srcDir)]);
     } catch (_) {
-      console.log('asdas');
+      console.log('123456789');
     }
 
     console.log(execaSync('git', ['status']).stdout);
