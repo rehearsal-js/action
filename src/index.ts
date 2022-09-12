@@ -4,6 +4,7 @@ import { execaSync } from 'execa';
 import { resolve } from 'path';
 import { rehearsal } from '@rehearsal/cli';
 import { a } from './test';
+import { readdirSync } from 'fs';
 
 export function run(): void {
   const srcDir = getInput('src_dir') || '.';
@@ -14,6 +15,8 @@ export function run(): void {
     console.log(execaSync('yarn', ['install']).stdout); // OR NPM
 
     console.log(execaSync('ls', ['-la']).stdout);
+
+    console.log(readdirSync('/assets/photos/'));
 
     console.log(execaSync('git', ['config', 'user.name', gitUserName]).stdout);
     console.log(execaSync('git', ['config', 'user.email', gitUserEmail]).stdout);
