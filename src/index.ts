@@ -5,7 +5,7 @@ import { resolve } from 'path';
 import { rehearsal } from '@rehearsal/cli';
 import { a } from './test';
 
-export async function run(): Promise<void> {
+export function run(): void {
   const srcDir = getInput('src_dir') || '.';
   const gitUserName = getInput('git_user_name') || 'rehearsal[bot]';
   const gitUserEmail = getInput('git_user_email') || 'rehearsal[bot]@users.noreply.github.com';
@@ -13,7 +13,7 @@ export async function run(): Promise<void> {
   try {
     console.log(execaSync('yarn', ['install']).stdout); // OR NPM
 
-    console.log(execaSync('ls', ['-ls']).stdout);
+    console.log(execaSync('ls', ['-la']).stdout);
 
     console.log(execaSync('git', ['config', 'user.name', gitUserName]).stdout);
     console.log(execaSync('git', ['config', 'user.email', gitUserEmail]).stdout);
@@ -22,7 +22,7 @@ export async function run(): Promise<void> {
     console.log(execaSync('git', ['status']).stdout);
 
     try {
-      await rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '--src_dir', resolve(srcDir)]);
+      rehearsal.parse(['node', 'rehearsal', 'upgrade', '--src_dir', resolve(srcDir)]);
     } catch (_) {
       console.log('asdas');
     }
