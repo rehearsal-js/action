@@ -1,4 +1,5 @@
 import { getInput, setFailed } from '@actions/core';
+import { context } from '@actions/github';
 
 import { execaSync } from 'execa';
 import { resolve } from 'path';
@@ -12,6 +13,9 @@ export function run(): void {
 
   try {
     console.log('987654321');
+
+    console.log(context);
+
     console.log(execaSync('yarn', ['install']).stdout); // OR NPM
 
     //console.log(execaSync('ls', ['-Rla']).stdout);
