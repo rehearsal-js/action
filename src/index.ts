@@ -4,7 +4,6 @@ import { create as glob } from '@actions/glob';
 import { context } from '@actions/github';
 import { resolve } from 'path';
 import { rehearsal } from '@rehearsal/cli';
-import { a } from './test';
 
 export async function run(): Promise<void> {
   const basePath = getInput('base-path') || '.';
@@ -22,19 +21,26 @@ export async function run(): Promise<void> {
     console.log('Upgrade started');
 
     try {
-      console.log(await exec('yarn', ['install'])); // OR NPM
+      await exec('yarn', ['install']); // OR NPM
 
       // If repo is dirty - stash or commit changes (use param)
       console.log('Checking is repo is dirty');
-      console.log(await exec('git', ['status']));
+      await exec('git', ['status']);
 
       // Stash any changes in the repo after `yarn install`
       console.log('Stashing all local changes');
-      console.log(await exec('git', ['stash', 'push', '-m', stashMessage]));
+      await exec('git', ['stash', 'push', '-m', stashMessage]);
 
       // Run rehearsal to have files updated
       // Rehearsal? Pin the original TS version and run yarn install
-      rehearsal.parse(['node', 'rehearsal', 'upgrade', '--dry_run', '--src_dir', baseDir]);
+      await rehearsal.parseAsync([
+        'node',
+        'rehearsal',
+        'upgrade',
+        '--dry_run',
+        '--src_dir',
+        baseDir,
+      ]);
 
       console.log('Checking for changes made by Rehearsal');
       console.log(await exec('git', ['status']));
@@ -68,7 +74,5 @@ export async function run(): Promise<void> {
     setFailed((error as Error).message);
   }
 }
-
-a();
 
 run();
