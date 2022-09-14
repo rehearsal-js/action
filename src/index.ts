@@ -1,4 +1,4 @@
-import { getInput, setFailed, setSecret } from '@actions/core';
+import { getInput, setFailed } from '@actions/core';
 import { getExecOutput as exec } from '@actions/exec';
 import { create as glob } from '@actions/glob';
 import { context } from '@actions/github';
