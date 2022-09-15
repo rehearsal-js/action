@@ -13440,12 +13440,12 @@ async function run() {
             console.log('Running Rehearsal Upgrade');
             await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
             console.log('Checking for changes made by Rehearsal');
-            console.log(await (0, exec_1.getExecOutput)('git', ['status']));
+            await (0, exec_1.getExecOutput)('git', ['status']);
             // Create a commit with all updated files
             console.log('Committing changes');
-            console.log(await (0, exec_1.getExecOutput)('git', ['add', '.']));
-            console.log(await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']));
-            console.log(await (0, exec_1.getExecOutput)('git', [
+            (await (0, exec_1.getExecOutput)('git', ['add', '.']));
+            await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+            await (0, exec_1.getExecOutput)('git', [
                 '-c',
                 `"user.name=${gitUserName}"`,
                 '-c',
@@ -13453,10 +13453,10 @@ async function run() {
                 'commit',
                 '-m',
                 `"${commitMessage}"`,
-            ]));
+            ]);
             // Pushing changes to the remote Rehearsal's branch
             console.log('Pushing changes to origin');
-            console.log(await (0, exec_1.getExecOutput)('git', ['push', 'origin', branchName, '--force']));
+            await (0, exec_1.getExecOutput)('git', ['push', 'origin', branchName, '--force']);
             // Create PR is it's not exists
             console.log(githubToken);
             console.log(github_1.context);

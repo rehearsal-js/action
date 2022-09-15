@@ -47,29 +47,24 @@ export async function run(): Promise<void> {
       await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
 
       console.log('Checking for changes made by Rehearsal');
-      console.log(await exec('git', ['status']));
+      await exec('git', ['status']);
 
       // Create a commit with all updated files
-      console.log('Committing changes');
-      console.log(await exec('git', ['add', '.']));
-      console.log(
-        await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock'])
-      );
-      console.log(
-        await exec('git', [
-          '-c',
-          `"user.name=${gitUserName}"`,
-          '-c',
-          `"user.email=${gitUserEmail}"`,
-          'commit',
-          '-m',
-          `"${commitMessage}"`,
-        ])
-      );
+      console.log('Committing changes');(await exec('git', ['add', '.']));
+      await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+      await exec('git', [
+        '-c',
+        `"user.name=${gitUserName}"`,
+        '-c',
+        `"user.email=${gitUserEmail}"`,
+        'commit',
+        '-m',
+        `"${commitMessage}"`,
+      ]);
 
       // Pushing changes to the remote Rehearsal's branch
       console.log('Pushing changes to origin');
-      console.log(await exec('git', ['push', 'origin', branchName, '--force']));
+      await exec('git', ['push', 'origin', branchName, '--force']);
 
       // Create PR is it's not exists
       console.log(githubToken);
