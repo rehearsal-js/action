@@ -24,7 +24,7 @@
     "build": "tsc -b && ncc build dist/src/index.js --out=bin",
     "lint": "tsc --noEmit && eslint --fix . --ext .ts",
     "test": "vitest --run",
-    "test:watch": "vitest --coverage --watch"
+    "lazy": "yarn build && git add . && git commit -m \"Progress..\" && git push"
   },
   "dependencies": {
     "@actions/core": "^1.9.1",

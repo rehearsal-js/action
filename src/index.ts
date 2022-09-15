@@ -22,8 +22,8 @@ export async function run(): Promise<void> {
     try {
       await exec('ls', ['-la']);
 
-      console.log((await globber('*/yarn.lock')).glob());
-      
+      console.log(await (await globber('*/yarn.lock')).glob());
+
       await exec('yarn', ['install']);
       await exec('yarn', ['global', 'add', 'typescript']);
       await exec('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
@@ -47,6 +47,7 @@ export async function run(): Promise<void> {
 
       // Create a commit with all updated files
       console.log('Committing changes');
+      console.log(await exec('git', ['add', '.']));
       console.log(
         await exec('git', [
           'commit',
