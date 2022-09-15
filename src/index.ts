@@ -36,7 +36,8 @@ export async function run(): Promise<void> {
       // Rehearsal? Pin the original TS version and run yarn install
       console.log('Running Rehearsal Upgrade');
       // TODO: Run bundled index.js
-      await exec('yarn', ['global', 'add', 'typescript @rehearsal/cli']); // OR NPM
+      await exec('yarn', ['global', 'add', 'typescript']); // OR NPM
+      await exec('yarn', ['global', 'add', '@rehearsal/cli']); // OR NPM
       await exec('rehearsal', ['upgrade', '-dry_run', '-s', baseDir]);
 
       /*
