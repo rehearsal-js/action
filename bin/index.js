@@ -13418,6 +13418,7 @@ async function run() {
         console.log('Upgrade started');
         try {
             await (0, exec_1.getExecOutput)('ls', ['-la']);
+            console.log((await (0, glob_1.create)('*/yarn.lock')).glob());
             await (0, exec_1.getExecOutput)('yarn', ['install']);
             await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']);
             await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
@@ -13439,7 +13440,7 @@ async function run() {
             console.log(await (0, exec_1.getExecOutput)('git', [
                 'commit',
                 '-m',
-                commitMessage,
+                `"${commitMessage}"`,
                 '-c',
                 `"user.name=${gitUserName}"`,
                 '-c',
@@ -13451,7 +13452,6 @@ async function run() {
             // Create PR is it's not exists
             console.log(githubToken);
             console.log(github_1.context);
-            console.log((await (0, glob_1.create)('*/yarn.lock')).glob());
             /*
             const newIssue = await getOctokit().rest.issues.create({
               ...context.repo,
