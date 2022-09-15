@@ -21,7 +21,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsc -b && ncc build dist/src/index.js --minify --out=bin",
+    "build": "tsc -b && ncc build dist/src/index.js --out=bin",
     "lint": "tsc --noEmit && eslint --fix . --ext .ts",
     "test": "vitest --run",
     "test:watch": "vitest --coverage --watch"

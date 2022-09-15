@@ -38,7 +38,7 @@ export async function run(): Promise<void> {
       // TODO: Run bundled index.js
       await exec('yarn', ['global', 'add', 'typescript']); // OR NPM
       await exec('yarn', ['global', 'add', '@rehearsal/cli']); // OR NPM
-      await exec('rehearsal', ['upgrade', '-dry_run', '-s', baseDir]);
+      await exec('rehearsal', ['upgrade', '--dry_run', '-s', baseDir]);
 
       /*
       await rehearsal.parseAsync([
