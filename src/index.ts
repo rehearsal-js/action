@@ -20,6 +20,8 @@ export async function run(): Promise<void> {
     console.log('Upgrade started');
 
     try {
+      await exec('ls', ['-la']);
+
       await exec('yarn', ['install']); // OR NPM
 
       // If repo is dirty - stash or commit changes (use param)
