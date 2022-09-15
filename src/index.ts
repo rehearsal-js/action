@@ -3,7 +3,6 @@ import { getExecOutput as exec } from '@actions/exec';
 import { create as glob } from '@actions/glob';
 import { context } from '@actions/github';
 import { resolve } from 'path';
-import { rehearsal } from '@rehearsal/cli';
 
 export async function run(): Promise<void> {
   const basePath = getInput('base-path') || '.';
@@ -22,6 +21,7 @@ export async function run(): Promise<void> {
 
     try {
       await exec('yarn', ['install']); // OR NPM
+      await exec('yarn', ['global', 'add', '@rehearsal/cli']); // OR NPM
 
       // If repo is dirty - stash or commit changes (use param)
       console.log('Checking is repo is dirty');
@@ -33,6 +33,10 @@ export async function run(): Promise<void> {
 
       // Run rehearsal to have files updated
       // Rehearsal? Pin the original TS version and run yarn install
+      console.log('Running Rehearsal Upgrade');
+      await exec('rehearsal', ['upgrade', '-dry_run', '-s', baseDir]);
+
+      /*
       await rehearsal.parseAsync([
         'node',
         'rehearsal',
@@ -41,7 +45,7 @@ export async function run(): Promise<void> {
         '--src_dir',
         baseDir,
       ]);
-
+      */
       console.log('Checking for changes made by Rehearsal');
       console.log(await exec('git', ['status']));
 
