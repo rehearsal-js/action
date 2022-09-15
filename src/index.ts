@@ -40,23 +40,20 @@ export async function run(): Promise<void> {
       // Rehearsal? Pin the original TS version and run yarn install
       // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
       console.log('Running Rehearsal Upgrade');
-      await exec('rehearsal', ['upgrade', '--dry_run', '-s', baseDir]);
+      await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
 
       console.log('Checking for changes made by Rehearsal');
       console.log(await exec('git', ['status']));
 
       // Create a commit with all updated files
       console.log('Committing changes');
-      console.log(await exec('git', ['add', '.']));
+      console.log(await exec('git', ['add .']));
       console.log(
         await exec('git', [
+          `-c "user.name=${gitUserName}"`,
+          `-c "user.email=${gitUserEmail}"`,
           'commit',
-          '-m',
-          `"${commitMessage}"`,
-          '-c',
-          `"user.name=${gitUserName}"`,
-          '-c',
-          `"user.email=${gitUserEmail}"`,
+          `-m "${commitMessage}"`,
         ])
       );
 
