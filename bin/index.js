@@ -13418,7 +13418,9 @@ async function run() {
         console.log('Upgrade started');
         try {
             await (0, exec_1.getExecOutput)('ls', ['-la']);
-            await (0, exec_1.getExecOutput)('yarn', ['install']); // OR NPM
+            await (0, exec_1.getExecOutput)('yarn', ['install']);
+            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']);
+            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
             // If repo is dirty - stash or commit changes (use param)
             console.log('Checking is repo is dirty');
             await (0, exec_1.getExecOutput)('git', ['status']);
@@ -13427,35 +13429,29 @@ async function run() {
             await (0, exec_1.getExecOutput)('git', ['stash', 'push', '-m', stashMessage]);
             // Run rehearsal to have files updated
             // Rehearsal? Pin the original TS version and run yarn install
+            // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
             console.log('Running Rehearsal Upgrade');
-            // TODO: Run bundled index.js
-            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']); // OR NPM
-            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli']); // OR NPM
             await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', '-s', baseDir]);
-            /*
-            await rehearsal.parseAsync([
-              'node',
-              'rehearsal',
-              'upgrade',
-              '--dry_run',
-              '--src_dir',
-              baseDir,
-            ]);
-            */
             console.log('Checking for changes made by Rehearsal');
             console.log(await (0, exec_1.getExecOutput)('git', ['status']));
             // Create a commit with all updated files
             console.log('Committing changes');
-            console.log(await (0, exec_1.getExecOutput)('git', ['config', 'user.name', gitUserName]));
-            console.log(await (0, exec_1.getExecOutput)('git', ['config', 'user.email', gitUserEmail]));
-            console.log(await (0, exec_1.getExecOutput)('git', ['commit', '-m', commitMessage]));
+            console.log(await (0, exec_1.getExecOutput)('git', [
+                'commit',
+                '-m',
+                commitMessage,
+                '-c',
+                `"user.name=${gitUserName}"`,
+                '-c',
+                `"user.email=${gitUserEmail}"`,
+            ]));
             // Pushing changes to the remote Rehearsal's branch
             console.log('Pushing changes to origin');
             console.log(await (0, exec_1.getExecOutput)('git', ['push', 'origin', branchName, '--force']));
             // Create PR is it's not exists
             console.log(githubToken);
             console.log(github_1.context);
-            console.log(await (0, glob_1.create)('yarn.lock'));
+            console.log((await (0, glob_1.create)('yarn.lock')).glob());
             /*
             const newIssue = await getOctokit().rest.issues.create({
               ...context.repo,
