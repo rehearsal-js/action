@@ -13418,18 +13418,24 @@ async function run() {
         console.log('Upgrade started');
         try {
             await (0, exec_1.getExecOutput)('ls', ['-la']);
-            console.log(await (await (0, glob_1.create)('**/yarn.lock')).glob());
-            await (0, exec_1.getExecOutput)('yarn', ['install']);
-            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']);
-            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
+            if (await isYarnManager()) {
+                await (0, exec_1.getExecOutput)('yarn', ['install']);
+                await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']);
+                await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
+            }
+            else {
+                await (0, exec_1.getExecOutput)('npm', ['install']);
+                await (0, exec_1.getExecOutput)('npm', ['-g', 'install', 'typescript']);
+                await (0, exec_1.getExecOutput)('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
+            }
             // If repo is dirty - stash or commit changes (use param)
             console.log('Checking is repo is dirty');
             await (0, exec_1.getExecOutput)('git', ['status']);
-            // Stash any changes in the repo after `yarn install`
+            // Stash any changes in the repo after dependencies installation
             console.log('Stashing all local changes');
             await (0, exec_1.getExecOutput)('git', ['stash', 'push', '-m', stashMessage]);
             // Run rehearsal to have files updated
-            // Rehearsal? Pin the original TS version and run yarn install
+            // Rehearsal?
             // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
             console.log('Running Rehearsal Upgrade');
             await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
@@ -13438,6 +13444,7 @@ async function run() {
             // Create a commit with all updated files
             console.log('Committing changes');
             console.log(await (0, exec_1.getExecOutput)('git', ['add .']));
+            console.log(await (0, exec_1.getExecOutput)('git', ['reset package.json package-lock.json yarn.lock']));
             console.log(await (0, exec_1.getExecOutput)('git', [
                 `-c "user.name=${gitUserName}"`,
                 `-c "user.email=${gitUserEmail}"`,
@@ -13468,6 +13475,11 @@ async function run() {
 }
 exports.run = run;
 run();
+async function isYarnManager() {
+    const globber = await (0, glob_1.create)('**/yarn.lock');
+    const files = await globber.glob();
+    return files.length > 0;
+}
 
 })();
 

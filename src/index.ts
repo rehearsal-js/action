@@ -1,6 +1,6 @@
 import { getInput, setFailed } from '@actions/core';
 import { getExecOutput as exec } from '@actions/exec';
-import { create as globber } from '@actions/glob';
+import { create as createGlobber } from '@actions/glob';
 import { context } from '@actions/github';
 import { resolve } from 'path';
 
@@ -22,22 +22,26 @@ export async function run(): Promise<void> {
     try {
       await exec('ls', ['-la']);
 
-      console.log(await (await globber('**/yarn.lock')).glob());
-
-      await exec('yarn', ['install']);
-      await exec('yarn', ['global', 'add', 'typescript']);
-      await exec('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
+      if (await isYarnManager()) {
+        await exec('yarn', ['install']);
+        await exec('yarn', ['global', 'add', 'typescript']);
+        await exec('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
+      } else {
+        await exec('npm', ['install']);
+        await exec('npm', ['-g', 'install', 'typescript']);
+        await exec('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
+      }
 
       // If repo is dirty - stash or commit changes (use param)
       console.log('Checking is repo is dirty');
       await exec('git', ['status']);
 
-      // Stash any changes in the repo after `yarn install`
+      // Stash any changes in the repo after dependencies installation
       console.log('Stashing all local changes');
       await exec('git', ['stash', 'push', '-m', stashMessage]);
 
       // Run rehearsal to have files updated
-      // Rehearsal? Pin the original TS version and run yarn install
+      // Rehearsal?
       // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
       console.log('Running Rehearsal Upgrade');
       await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
@@ -48,6 +52,7 @@ export async function run(): Promise<void> {
       // Create a commit with all updated files
       console.log('Committing changes');
       console.log(await exec('git', ['add .']));
+      console.log(await exec('git', ['reset package.json package-lock.json yarn.lock']));
       console.log(
         await exec('git', [
           `-c "user.name=${gitUserName}"`,
@@ -81,3 +86,10 @@ export async function run(): Promise<void> {
 }
 
 run();
+
+async function isYarnManager(): Promise<boolean> {
+  const globber = await createGlobber('**/yarn.lock');
+  const files = await globber.glob();
+
+  return files.length > 0;
+}
