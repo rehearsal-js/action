@@ -1,7 +1,7 @@
 import { getInput, setFailed } from '@actions/core';
 import { getExecOutput as exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
-import { context } from '@actions/github';
+import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
 
 export async function run(): Promise<void> {
@@ -38,7 +38,6 @@ export async function run(): Promise<void> {
       console.log('Checking is repo is dirty');
       await exec('git', ['checkout', '-b', branchName]);
 
-
       // If repo is dirty - stash or commit changes (use param)
       console.log('Checking is repo is dirty');
       await exec('git', ['status']);
@@ -57,7 +56,8 @@ export async function run(): Promise<void> {
       await exec('git', ['status']);
 
       // Create a commit with all updated files
-      console.log('Committing changes');(await exec('git', ['add', '.']));
+      console.log('Committing changes');
+      await exec('git', ['add', '.']);
       await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
       await exec('git', [
         '-c',
@@ -74,16 +74,13 @@ export async function run(): Promise<void> {
       await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
 
       // Create PR is it's not exists
-      console.log(githubToken);
-      console.log(context);
+      const octakit = getOctokit(githubToken);
 
-      /*
-      const newIssue = await getOctokit().rest.issues.create({
+      octakit.rest.issues.create({
         ...context.repo,
         title: 'New issue!',
-        body: 'Hello Universe!'
+        body: 'Hello Universe!',
       });
-      */
     } catch (_) {
       console.log('Upgrade finished');
     }

@@ -13447,7 +13447,7 @@ async function run() {
             await (0, exec_1.getExecOutput)('git', ['status']);
             // Create a commit with all updated files
             console.log('Committing changes');
-            (await (0, exec_1.getExecOutput)('git', ['add', '.']));
+            await (0, exec_1.getExecOutput)('git', ['add', '.']);
             await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
             await (0, exec_1.getExecOutput)('git', [
                 '-c',
@@ -13462,15 +13462,8 @@ async function run() {
             console.log('Pushing changes to origin');
             await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
             // Create PR is it's not exists
-            console.log(githubToken);
-            console.log(github_1.context);
-            /*
-            const newIssue = await getOctokit().rest.issues.create({
-              ...context.repo,
-              title: 'New issue!',
-              body: 'Hello Universe!'
-            });
-            */
+            const octakit = (0, github_1.getOctokit)(githubToken);
+            octakit.rest.issues.create(Object.assign(Object.assign({}, github_1.context.repo), { title: 'New issue!', body: 'Hello Universe!' }));
         }
         catch (_) {
             console.log('Upgrade finished');
