@@ -54,9 +54,9 @@ export async function run(): Promise<void> {
       await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
       await exec('git', [
         '-c',
-        `"user.name=${gitUserName}"`,
+        `user.name="${gitUserName}"`,
         '-c',
-        `"user.email=${gitUserEmail}"`,
+        `user.email="${gitUserEmail}"`,
         'commit',
         '-m',
         `"${commitMessage}"`,

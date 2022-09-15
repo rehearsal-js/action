@@ -13447,9 +13447,9 @@ async function run() {
             await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
             await (0, exec_1.getExecOutput)('git', [
                 '-c',
-                `"user.name=${gitUserName}"`,
+                `user.name="${gitUserName}"`,
                 '-c',
-                `"user.email=${gitUserEmail}"`,
+                `user.email="${gitUserEmail}"`,
                 'commit',
                 '-m',
                 `"${commitMessage}"`,
