@@ -13443,13 +13443,16 @@ async function run() {
             console.log(await (0, exec_1.getExecOutput)('git', ['status']));
             // Create a commit with all updated files
             console.log('Committing changes');
-            console.log(await (0, exec_1.getExecOutput)('git', ['add .']));
-            console.log(await (0, exec_1.getExecOutput)('git', ['reset package.json package-lock.json yarn.lock']));
+            console.log(await (0, exec_1.getExecOutput)('git', ['add', '.']));
+            console.log(await (0, exec_1.getExecOutput)('git', ['reset', 'package.json package-lock.json yarn.lock']));
             console.log(await (0, exec_1.getExecOutput)('git', [
-                `-c "user.name=${gitUserName}"`,
-                `-c "user.email=${gitUserEmail}"`,
+                '-c',
+                `"user.name=${gitUserName}"`,
+                '-c',
+                `"user.email=${gitUserEmail}"`,
                 'commit',
-                `-m "${commitMessage}"`,
+                '-m',
+                `"${commitMessage}"`,
             ]));
             // Pushing changes to the remote Rehearsal's branch
             console.log('Pushing changes to origin');
