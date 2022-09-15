@@ -21,7 +21,6 @@ export async function run(): Promise<void> {
 
     try {
       await exec('yarn', ['install']); // OR NPM
-      await exec('yarn', ['global', 'add', '@rehearsal/cli']); // OR NPM
 
       // If repo is dirty - stash or commit changes (use param)
       console.log('Checking is repo is dirty');
@@ -34,6 +33,8 @@ export async function run(): Promise<void> {
       // Run rehearsal to have files updated
       // Rehearsal? Pin the original TS version and run yarn install
       console.log('Running Rehearsal Upgrade');
+      // TODO: Run bundled index.js
+      await exec('yarn', ['global', 'add', 'typescript @rehearsal/cli']); // OR NPM
       await exec('rehearsal', ['upgrade', '-dry_run', '-s', baseDir]);
 
       /*
