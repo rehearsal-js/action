@@ -52,7 +52,9 @@ export async function run(): Promise<void> {
       // Create a commit with all updated files
       console.log('Committing changes');
       console.log(await exec('git', ['add', '.']));
-      console.log(await exec('git', ['reset', 'package.json package-lock.json yarn.lock']));
+      console.log(
+        await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock'])
+      );
       console.log(
         await exec('git', [
           '-c',
