@@ -13410,10 +13410,11 @@ async function run() {
     const githubToken = (0, core_1.getInput)('github-token') || '';
     const gitUserName = (0, core_1.getInput)('git-user-name') || 'rehearsal[bot]';
     const gitUserEmail = (0, core_1.getInput)('git-user-email') || 'rehearsal[bot]@users.noreply.github.com';
-    const branchName = 'rehearsal-bot/upgrade/xxx';
+    const branchName = 'rehearsal-bot/upgrade';
     const commitMessage = 'chore: Upgrade ...';
     const stashMessage = 'rehearsal-bot';
     const baseDir = (0, path_1.resolve)(basePath);
+    const defaultBranchName = 'master';
     try {
         console.log('Upgrade started');
         try {
@@ -13428,6 +13429,9 @@ async function run() {
                 await (0, exec_1.getExecOutput)('npm', ['-g', 'install', 'typescript']);
                 await (0, exec_1.getExecOutput)('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
             }
+            // If repo is dirty - stash or commit changes (use param)
+            console.log('Checking is repo is dirty');
+            await (0, exec_1.getExecOutput)('git', ['checkout', '-b', branchName]);
             // If repo is dirty - stash or commit changes (use param)
             console.log('Checking is repo is dirty');
             await (0, exec_1.getExecOutput)('git', ['status']);
@@ -13456,7 +13460,7 @@ async function run() {
             ]);
             // Pushing changes to the remote Rehearsal's branch
             console.log('Pushing changes to origin');
-            await (0, exec_1.getExecOutput)('git', ['push', 'origin', branchName, '--force']);
+            await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
             // Create PR is it's not exists
             console.log(githubToken);
             console.log(github_1.context);
