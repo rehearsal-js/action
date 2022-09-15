@@ -13418,7 +13418,7 @@ async function run() {
         console.log('Upgrade started');
         try {
             await (0, exec_1.getExecOutput)('ls', ['-la']);
-            console.log(await (await (0, glob_1.create)('*/yarn.lock')).glob());
+            console.log(await (await (0, glob_1.create)('**/yarn.lock')).glob());
             await (0, exec_1.getExecOutput)('yarn', ['install']);
             await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']);
             await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);

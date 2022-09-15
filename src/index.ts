@@ -22,7 +22,7 @@ export async function run(): Promise<void> {
     try {
       await exec('ls', ['-la']);
 
-      console.log(await (await globber('*/yarn.lock')).glob());
+      console.log(await (await globber('**/yarn.lock')).glob());
 
       await exec('yarn', ['install']);
       await exec('yarn', ['global', 'add', 'typescript']);
