@@ -13451,7 +13451,7 @@ async function run() {
             // Create PR is it's not exists
             console.log(githubToken);
             console.log(github_1.context);
-            console.log((await (0, glob_1.create)('yarn.lock')).glob());
+            console.log((await (0, glob_1.create)('*/yarn.lock')).glob());
             /*
             const newIssue = await getOctokit().rest.issues.create({
               ...context.repo,

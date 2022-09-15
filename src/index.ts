@@ -65,7 +65,7 @@ export async function run(): Promise<void> {
       console.log(githubToken);
       console.log(context);
 
-      console.log((await globber('yarn.lock')).glob());
+      console.log((await globber('*/yarn.lock')).glob());
       /*
       const newIssue = await getOctokit().rest.issues.create({
         ...context.repo,
