@@ -15479,23 +15479,23 @@ async function run() {
                 await (0, exec_1.getExecOutput)('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
             }
             // If repo is dirty - stash or commit changes (use param)
-            console.log('Checking is repo is dirty');
+            console.log('\nChecking is repo is dirty');
             await (0, exec_1.getExecOutput)('git', ['checkout', '-b', branchName]);
             // If repo is dirty - stash or commit changes (use param)
-            console.log('Checking is repo is dirty');
+            console.log('\nChecking is repo is dirty');
             await (0, exec_1.getExecOutput)('git', ['status']);
             // Stash any changes in the repo after dependencies installation
-            console.log('Stashing all local changes');
+            console.log('\nStashing all local changes');
             await (0, exec_1.getExecOutput)('git', ['stash', 'push', '-m', stashMessage]);
             // Run rehearsal to have files updated
             // Rehearsal?
             // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
-            console.log('Running Rehearsal Upgrade');
+            console.log('\nRunning Rehearsal Upgrade');
             await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
-            console.log('Checking for changes made by Rehearsal');
+            console.log('\nChecking for changes made by Rehearsal');
             await (0, exec_1.getExecOutput)('git', ['status']);
             // Create a commit with all updated files
-            console.log('Committing changes');
+            console.log('\nCommitting changes');
             await (0, exec_1.getExecOutput)('git', ['add', '.']);
             await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
             await (0, exec_1.getExecOutput)('git', [
@@ -15508,10 +15508,10 @@ async function run() {
                 `"${commitMessage}"`,
             ]);
             // Pushing changes to the remote Rehearsal's branch
-            console.log('Pushing changes to origin');
+            console.log('\nPushing changes to origin');
             await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
             const octokit = new (core_2.Octokit.plugin(octokit_plugin_create_pull_request_1.createPullRequest))({ auth: githubToken });
-            console.log('Creating Pull Request');
+            console.log('\nCreating Pull Request');
             console.log(await octokit.createPullRequest(Object.assign(Object.assign({}, github_1.context.repo), { title: commitMessage, body: 'Description', head: branchName, update: true, changes: [] })));
             /*
             // Create PR is it's not exists
@@ -15526,7 +15526,7 @@ async function run() {
             */
         }
         catch (_) {
-            console.log('Upgrade finished');
+            console.log('\nUpgrade finished');
         }
     }
     catch (error) {

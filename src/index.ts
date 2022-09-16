@@ -37,28 +37,28 @@ export async function run(): Promise<void> {
       }
 
       // If repo is dirty - stash or commit changes (use param)
-      console.log('Checking is repo is dirty');
+      console.log('\nChecking is repo is dirty');
       await exec('git', ['checkout', '-b', branchName]);
 
       // If repo is dirty - stash or commit changes (use param)
-      console.log('Checking is repo is dirty');
+      console.log('\nChecking is repo is dirty');
       await exec('git', ['status']);
 
       // Stash any changes in the repo after dependencies installation
-      console.log('Stashing all local changes');
+      console.log('\nStashing all local changes');
       await exec('git', ['stash', 'push', '-m', stashMessage]);
 
       // Run rehearsal to have files updated
       // Rehearsal?
       // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
-      console.log('Running Rehearsal Upgrade');
+      console.log('\nRunning Rehearsal Upgrade');
       await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
 
-      console.log('Checking for changes made by Rehearsal');
+      console.log('\nChecking for changes made by Rehearsal');
       await exec('git', ['status']);
 
       // Create a commit with all updated files
-      console.log('Committing changes');
+      console.log('\nCommitting changes');
       await exec('git', ['add', '.']);
       await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
       await exec('git', [
@@ -72,12 +72,12 @@ export async function run(): Promise<void> {
       ]);
 
       // Pushing changes to the remote Rehearsal's branch
-      console.log('Pushing changes to origin');
+      console.log('\nPushing changes to origin');
       await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
 
       const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
 
-      console.log('Creating Pull Request');
+      console.log('\nCreating Pull Request');
       console.log(
         await octokit.createPullRequest({
           ...context.repo,
@@ -101,7 +101,7 @@ export async function run(): Promise<void> {
       });
       */
     } catch (_) {
-      console.log('Upgrade finished');
+      console.log('\nUpgrade finished');
     }
   } catch (error) {
     setFailed((error as Error).message);
