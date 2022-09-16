@@ -73,11 +73,12 @@ export async function run(): Promise<void> {
 
       // Pushing changes to the remote Rehearsal's branch
       console.log('\nPushing changes to origin');
-      await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
+      await exec('git', ['push', 'origin', branchName, '--force']);
 
       const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
 
       console.log('\nCreating Pull Request');
+      /*
       console.log(
         await octokit.createPullRequest({
           ...context.repo,
@@ -93,18 +94,19 @@ export async function run(): Promise<void> {
           ],
         })
       );
+       */
 
-      /*
       // Create PR is it's not exists
       const octakit = getOctokit(githubToken);
-       
+
       octakit.rest.pulls.create({
         ...context.repo,
         title: commitMessage,
-        head: ,
-        base: 
+        head: branchName,
+        base: 'master',
+        body: 'Body...',
+        draft: true,
       });
-      */
     } catch (_) {
       console.log('\nUpgrade finished');
     }

@@ -15509,25 +15509,29 @@ async function run() {
             ]);
             // Pushing changes to the remote Rehearsal's branch
             console.log('\nPushing changes to origin');
-            await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
+            await (0, exec_1.getExecOutput)('git', ['push', 'origin', branchName, '--force']);
             const octokit = new (core_2.Octokit.plugin(octokit_plugin_create_pull_request_1.createPullRequest))({ auth: githubToken });
             console.log('\nCreating Pull Request');
-            console.log(await octokit.createPullRequest(Object.assign(Object.assign({}, github_1.context.repo), { title: commitMessage, body: 'Description', head: branchName, base: 'defaults', update: true, changes: [
-                    {
-                        commit: '...',
-                    },
-                ] })));
             /*
+            console.log(
+              await octokit.createPullRequest({
+                ...context.repo,
+                title: commitMessage,
+                body: 'Description',
+                head: branchName,
+                base: 'defaults',
+                update: true,
+                changes: [
+                  {
+                    commit: '...',
+                  },
+                ],
+              })
+            );
+             */
             // Create PR is it's not exists
-            const octakit = getOctokit(githubToken);
-             
-            octakit.rest.pulls.create({
-              ...context.repo,
-              title: commitMessage,
-              head: ,
-              base:
-            });
-            */
+            const octakit = (0, github_1.getOctokit)(githubToken);
+            octakit.rest.pulls.create(Object.assign(Object.assign({}, github_1.context.repo), { title: commitMessage, head: branchName, base: 'master', body: 'Body...', draft: true }));
         }
         catch (_) {
             console.log('\nUpgrade finished');
