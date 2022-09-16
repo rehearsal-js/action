@@ -37,12 +37,8 @@ export async function run(): Promise<void> {
       }
 
       // If repo is dirty - stash or commit changes (use param)
-      console.log('\nChecking is repo is dirty');
-      //await exec('git', ['checkout', '-b', branchName]);
-
-      // If repo is dirty - stash or commit changes (use param)
-      console.log('\nChecking is repo is dirty');
-      await exec('git', ['status']);
+      //console.log('\nChecking is repo is dirty');
+      //await exec('git', ['status']);
 
       // Stash any changes in the repo after dependencies installation
       console.log('\nStashing all local changes');
@@ -54,8 +50,8 @@ export async function run(): Promise<void> {
       console.log('\nRunning Rehearsal Upgrade');
       await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
 
-      console.log('\nChecking for changes made by Rehearsal');
-      await exec('git', ['status']);
+      //console.log('\nChecking for changes made by Rehearsal');
+      //await exec('git', ['status']);
 
       // Create a commit with all updated files
       console.log('\nCommitting changes');
@@ -78,27 +74,8 @@ export async function run(): Promise<void> {
       const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
 
       console.log('\nCreating Pull Request');
-      /*
-      console.log(
-        await octokit.createPullRequest({
-          ...context.repo,
-          title: commitMessage,
-          body: 'Description',
-          head: branchName,
-          base: 'defaults',
-          update: true,
-          changes: [
-            {
-              commit: '...',
-            },
-          ],
-        })
-      );
-       */
-
-      // Create PR is it's not exists
       const octakit = getOctokit(githubToken);
-
+      console.log(context.repo);
       octakit.rest.pulls.create({
         ...context.repo,
         title: commitMessage,

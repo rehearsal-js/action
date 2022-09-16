@@ -15479,11 +15479,8 @@ async function run() {
                 await (0, exec_1.getExecOutput)('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
             }
             // If repo is dirty - stash or commit changes (use param)
-            console.log('\nChecking is repo is dirty');
-            //await exec('git', ['checkout', '-b', branchName]);
-            // If repo is dirty - stash or commit changes (use param)
-            console.log('\nChecking is repo is dirty');
-            await (0, exec_1.getExecOutput)('git', ['status']);
+            //console.log('\nChecking is repo is dirty');
+            //await exec('git', ['status']);
             // Stash any changes in the repo after dependencies installation
             console.log('\nStashing all local changes');
             await (0, exec_1.getExecOutput)('git', ['stash', 'push', '-m', stashMessage]);
@@ -15492,8 +15489,8 @@ async function run() {
             // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
             console.log('\nRunning Rehearsal Upgrade');
             await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
-            console.log('\nChecking for changes made by Rehearsal');
-            await (0, exec_1.getExecOutput)('git', ['status']);
+            //console.log('\nChecking for changes made by Rehearsal');
+            //await exec('git', ['status']);
             // Create a commit with all updated files
             console.log('\nCommitting changes');
             await (0, exec_1.getExecOutput)('git', ['add', '.']);
@@ -15512,25 +15509,8 @@ async function run() {
             await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
             const octokit = new (core_2.Octokit.plugin(octokit_plugin_create_pull_request_1.createPullRequest))({ auth: githubToken });
             console.log('\nCreating Pull Request');
-            /*
-            console.log(
-              await octokit.createPullRequest({
-                ...context.repo,
-                title: commitMessage,
-                body: 'Description',
-                head: branchName,
-                base: 'defaults',
-                update: true,
-                changes: [
-                  {
-                    commit: '...',
-                  },
-                ],
-              })
-            );
-             */
-            // Create PR is it's not exists
             const octakit = (0, github_1.getOctokit)(githubToken);
+            console.log(github_1.context.repo);
             octakit.rest.pulls.create(Object.assign(Object.assign({}, github_1.context.repo), { title: commitMessage, head: branchName, base: 'master', body: 'Body...', draft: true }));
         }
         catch (_) {
