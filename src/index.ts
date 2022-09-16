@@ -3,8 +3,8 @@ import { getExecOutput as exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
 import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
-import {Octokit} from "@octokit/core";
-import {createPullRequest} from "octokit-plugin-create-pull-request";
+import { Octokit } from '@octokit/core';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
 
 export async function run(): Promise<void> {
   const basePath = getInput('base-path') || '.';
@@ -84,6 +84,7 @@ export async function run(): Promise<void> {
           title: commitMessage,
           body: 'Description',
           head: branchName,
+          base: 'defaults',
           update: true,
           changes: [],
         })

@@ -15512,7 +15512,7 @@ async function run() {
             await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
             const octokit = new (core_2.Octokit.plugin(octokit_plugin_create_pull_request_1.createPullRequest))({ auth: githubToken });
             console.log('\nCreating Pull Request');
-            console.log(await octokit.createPullRequest(Object.assign(Object.assign({}, github_1.context.repo), { title: commitMessage, body: 'Description', head: branchName, update: true, changes: [] })));
+            console.log(await octokit.createPullRequest(Object.assign(Object.assign({}, github_1.context.repo), { title: commitMessage, body: 'Description', head: branchName, base: 'defaults', update: true, changes: [] })));
             /*
             // Create PR is it's not exists
             const octakit = getOctokit(githubToken);
