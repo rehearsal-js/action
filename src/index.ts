@@ -86,7 +86,11 @@ export async function run(): Promise<void> {
           head: branchName,
           base: 'defaults',
           update: true,
-          changes: [],
+          changes: [
+            {
+              commit: '...',
+            },
+          ],
         })
       );
 
