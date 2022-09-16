@@ -3,6 +3,8 @@ import { getExecOutput as exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
 import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
+import {Octokit} from "@octokit/core";
+import {createPullRequest} from "octokit-plugin-create-pull-request";
 
 export async function run(): Promise<void> {
   const basePath = getInput('base-path') || '.';
@@ -73,14 +75,30 @@ export async function run(): Promise<void> {
       console.log('Pushing changes to origin');
       await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
 
+      const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
+
+      console.log(
+        await octokit.createPullRequest({
+          ...context.repo,
+          title: commitMessage,
+          body: 'Description',
+          head: branchName,
+          update: true,
+          changes: [],
+        })
+      );
+
+      /*
       // Create PR is it's not exists
       const octakit = getOctokit(githubToken);
-
-      octakit.rest.issues.create({
+       
+      octakit.rest.pulls.create({
         ...context.repo,
-        title: 'New issue!',
-        body: 'Hello Universe!',
+        title: commitMessage,
+        head: ,
+        base: 
       });
+      */
     } catch (_) {
       console.log('Upgrade finished');
     }
