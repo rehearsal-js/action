@@ -77,6 +77,7 @@ export async function run(): Promise<void> {
 
       const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
 
+      console.log('Creating Pull Request');
       console.log(
         await octokit.createPullRequest({
           ...context.repo,
