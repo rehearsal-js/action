@@ -15480,7 +15480,7 @@ async function run() {
             }
             // If repo is dirty - stash or commit changes (use param)
             console.log('\nChecking is repo is dirty');
-            await (0, exec_1.getExecOutput)('git', ['checkout', '-b', branchName]);
+            //await exec('git', ['checkout', '-b', branchName]);
             // If repo is dirty - stash or commit changes (use param)
             console.log('\nChecking is repo is dirty');
             await (0, exec_1.getExecOutput)('git', ['status']);
@@ -15509,7 +15509,7 @@ async function run() {
             ]);
             // Pushing changes to the remote Rehearsal's branch
             console.log('\nPushing changes to origin');
-            await (0, exec_1.getExecOutput)('git', ['push', 'origin', branchName, '--force']);
+            await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
             const octokit = new (core_2.Octokit.plugin(octokit_plugin_create_pull_request_1.createPullRequest))({ auth: githubToken });
             console.log('\nCreating Pull Request');
             /*

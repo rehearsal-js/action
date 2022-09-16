@@ -38,7 +38,7 @@ export async function run(): Promise<void> {
 
       // If repo is dirty - stash or commit changes (use param)
       console.log('\nChecking is repo is dirty');
-      await exec('git', ['checkout', '-b', branchName]);
+      //await exec('git', ['checkout', '-b', branchName]);
 
       // If repo is dirty - stash or commit changes (use param)
       console.log('\nChecking is repo is dirty');
@@ -73,7 +73,7 @@ export async function run(): Promise<void> {
 
       // Pushing changes to the remote Rehearsal's branch
       console.log('\nPushing changes to origin');
-      await exec('git', ['push', 'origin', branchName, '--force']);
+      await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
 
       const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
 
