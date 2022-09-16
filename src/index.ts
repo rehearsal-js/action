@@ -1,10 +1,9 @@
 import { getInput, setFailed } from '@actions/core';
-import { getExecOutput as exec } from '@actions/exec';
+import { exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
 import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
-import { Octokit } from '@octokit/core';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { RequestError } from '@octokit/request-error';
 
 export async function run(): Promise<void> {
   const basePath = getInput('base-path') || '.';
@@ -22,73 +21,74 @@ export async function run(): Promise<void> {
 
   try {
     console.log('Upgrade started');
+    
+    await exec('ls', ['-la']);
 
-    try {
-      await exec('ls', ['-la']);
-
-      if (await isYarnManager()) {
-        await exec('yarn', ['install']);
-        await exec('yarn', ['global', 'add', 'typescript']);
-        await exec('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
-      } else {
-        await exec('npm', ['install']);
-        await exec('npm', ['-g', 'install', 'typescript']);
-        await exec('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
-      }
-
-      // If repo is dirty - stash or commit changes (use param)
-      //console.log('\nChecking is repo is dirty');
-      //await exec('git', ['status']);
-
-      // Stash any changes in the repo after dependencies installation
-      console.log('\nStashing all local changes');
-      await exec('git', ['stash', 'push', '-m', stashMessage]);
-
-      // Run rehearsal to have files updated
-      // Rehearsal?
-      // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
-      console.log('\nRunning Rehearsal Upgrade');
-      await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
-
-      //console.log('\nChecking for changes made by Rehearsal');
-      //await exec('git', ['status']);
-
-      // Create a commit with all updated files
-      console.log('\nCommitting changes');
-      await exec('git', ['add', '.']);
-      await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
-      await exec('git', [
-        '-c',
-        `user.name="${gitUserName}"`,
-        '-c',
-        `user.email="${gitUserEmail}"`,
-        'commit',
-        '-m',
-        `"${commitMessage}"`,
-      ]);
-
-      // Pushing changes to the remote Rehearsal's branch
-      console.log('\nPushing changes to origin');
-      await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
-
-      const octokit = new (Octokit.plugin(createPullRequest))({ auth: githubToken });
-
-      console.log('\nCreating Pull Request');
-      const octakit = getOctokit(githubToken);
-      console.log(context.repo);
-      octakit.rest.pulls.create({
-        ...context.repo,
-        title: commitMessage,
-        head: branchName,
-        base: 'master',
-        body: 'Body...',
-        draft: true,
-      });
-    } catch (_) {
-      console.log('\nUpgrade finished');
+    if (await isYarnManager()) {
+      await exec('yarn', ['install']);
+      await exec('yarn', ['global', 'add', 'typescript']);
+      await exec('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
+    } else {
+      await exec('npm', ['install']);
+      await exec('npm', ['-g', 'install', 'typescript']);
+      await exec('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
     }
+
+    // If repo is dirty - stash or commit changes (use param)
+    //console.log('\nChecking is repo is dirty');
+    //await exec('git', ['status']);
+
+    // Stash any changes in the repo after dependencies installation
+    console.log('\nStashing all local changes');
+    await exec('git', ['stash', 'push', '-m', stashMessage]);
+
+    // Run rehearsal to have files updated
+    // Rehearsal?
+    // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
+    console.log('\nRunning Rehearsal Upgrade');
+    await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
+
+    //console.log('\nChecking for changes made by Rehearsal');
+    //await exec('git', ['status']);
+
+    // Create a commit with all updated files
+    console.log('\nCommitting changes');
+    await exec('git', ['add', '.']);
+    await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+    await exec('git', [
+      '-c',
+      `user.name="${gitUserName}"`,
+      '-c',
+      `user.email="${gitUserEmail}"`,
+      'commit',
+      '-m',
+      `"${commitMessage}"`,
+    ]);
+
+    // Pushing changes to the remote Rehearsal's branch
+    console.log('\nPushing changes to origin');
+    await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
+
+    console.log('\nCreating Pull Request');
+    console.log(context.repo);
+    const octokit = getOctokit(githubToken);
+    octokit.rest.pulls.create({
+      ...context.repo,
+      title: commitMessage,
+      head: branchName,
+      base: 'master',
+      body: 'Body...',
+      draft: true,
+    });
+
+    console.log('\nUpgrade finished');
+
   } catch (error) {
-    setFailed((error as Error).message);
+    if (error instanceof RequestError) {
+      console.log('Pull Request is already exists');
+    } else {
+      setFailed((error as Error).message);
+    }
   }
 }
 
