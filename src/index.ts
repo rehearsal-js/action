@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core';
-import { getExecOutput as exec } from '@actions/exec';
+import { exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
 import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
@@ -40,7 +40,7 @@ export async function run(): Promise<void> {
 
     // Stash any changes in the repo after dependencies installation
     console.log('\nStashing all local changes');
-    //await exec('git', ['stash', 'push', '-m', stashMessage]);
+    await exec('git', ['stash', 'push', '-m', stashMessage], { ignoreReturnCode: true });
 
     // Run rehearsal to have files updated
     // Rehearsal?
@@ -48,15 +48,13 @@ export async function run(): Promise<void> {
     console.log('\nRunning Rehearsal Upgrade');
     //await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
 
-    //console.log('\nChecking for changes made by Rehearsal');
-    //await exec('git', ['status']);
-
     // Create a commit with all updated files
     console.log('\nCommitting changes');
-    try {
-      await exec('git', ['add', '.']);
-      await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
-      await exec('git', [
+    await exec('git', ['add', '.'], { ignoreReturnCode: true });
+    await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+    await exec(
+      'git',
+      [
         '-c',
         `user.name="${gitUserName}"`,
         '-c',
@@ -64,10 +62,9 @@ export async function run(): Promise<void> {
         'commit',
         '-m',
         `"${commitMessage}"`,
-      ]);
-    } catch (error) {
-      console.log((error as Error).message);
-    }
+      ],
+      { ignoreReturnCode: true }
+    );
 
     // Pushing changes to the remote Rehearsal's branch
     console.log('\nPushing changes to origin');
