@@ -13408,7 +13408,7 @@ const path_1 = __nccwpck_require__(1017);
 const request_error_1 = __nccwpck_require__(537);
 async function run() {
     const basePath = (0, core_1.getInput)('base-path') || '.';
-    const githubToken = (0, core_1.getInput)('github-token') || '';
+    const githubToken = (0, core_1.getInput)('github-token') || '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';
     const gitUserName = (0, core_1.getInput)('git-user-name') || 'rehearsal[bot]';
     const gitUserEmail = (0, core_1.getInput)('git-user-email') || 'rehearsal[bot]@users.noreply.github.com';
     const branchName = 'rehearsal-bot/upgrade';
@@ -13434,7 +13434,7 @@ async function run() {
         //await exec('git', ['status']);
         // Stash any changes in the repo after dependencies installation
         console.log('\nStashing all local changes');
-        await (0, exec_1.getExecOutput)('git', ['stash', 'push', '-m', stashMessage]);
+        //await exec('git', ['stash', 'push', '-m', stashMessage]);
         // Run rehearsal to have files updated
         // Rehearsal?
         // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
@@ -13444,17 +13444,22 @@ async function run() {
         //await exec('git', ['status']);
         // Create a commit with all updated files
         console.log('\nCommitting changes');
-        await (0, exec_1.getExecOutput)('git', ['add', '.']);
-        await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
-        await (0, exec_1.getExecOutput)('git', [
-            '-c',
-            `user.name="${gitUserName}"`,
-            '-c',
-            `user.email="${gitUserEmail}"`,
-            'commit',
-            '-m',
-            `"${commitMessage}"`,
-        ]);
+        try {
+            await (0, exec_1.getExecOutput)('git', ['add', '.']);
+            await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+            await (0, exec_1.getExecOutput)('git', [
+                '-c',
+                `user.name="${gitUserName}"`,
+                '-c',
+                `user.email="${gitUserEmail}"`,
+                'commit',
+                '-m',
+                `"${commitMessage}"`,
+            ]);
+        }
+        catch (error) {
+            console.log(error.message);
+        }
         // Pushing changes to the remote Rehearsal's branch
         console.log('\nPushing changes to origin');
         await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);

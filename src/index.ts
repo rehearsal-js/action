@@ -40,7 +40,7 @@ export async function run(): Promise<void> {
 
     // Stash any changes in the repo after dependencies installation
     console.log('\nStashing all local changes');
-    await exec('git', ['stash', 'push', '-m', stashMessage]);
+    //await exec('git', ['stash', 'push', '-m', stashMessage]);
 
     // Run rehearsal to have files updated
     // Rehearsal?
@@ -53,17 +53,21 @@ export async function run(): Promise<void> {
 
     // Create a commit with all updated files
     console.log('\nCommitting changes');
-    await exec('git', ['add', '.']);
-    await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
-    await exec('git', [
-      '-c',
-      `user.name="${gitUserName}"`,
-      '-c',
-      `user.email="${gitUserEmail}"`,
-      'commit',
-      '-m',
-      `"${commitMessage}"`,
-    ]);
+    try {
+      await exec('git', ['add', '.']);
+      await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+      await exec('git', [
+        '-c',
+        `user.name="${gitUserName}"`,
+        '-c',
+        `user.email="${gitUserEmail}"`,
+        'commit',
+        '-m',
+        `"${commitMessage}"`,
+      ]);
+    } catch (error) {
+      console.log((error as Error).message);
+    }
 
     // Pushing changes to the remote Rehearsal's branch
     console.log('\nPushing changes to origin');
