@@ -34,21 +34,16 @@ export async function run(): Promise<void> {
       await exec('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
     }
 
-    // If repo is dirty - stash or commit changes (use param)
-    //console.log('\nChecking is repo is dirty');
-    //await exec('git', ['status']);
-
     // Stash any changes in the repo after dependencies installation
     console.log('\nStashing all local changes');
     await exec('git', ['stash', 'push', '-m', stashMessage], { ignoreReturnCode: true });
 
     // Run rehearsal to have files updated
-    // Rehearsal?
     // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
     console.log('\nRunning Rehearsal Upgrade');
     //await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
 
-    // Create a commit with all updated files
+    // Create a commit with all updated files (except updated package.json and yarn.lock)
     console.log('\nCommitting changes');
     await exec('git', ['add', '.'], { ignoreReturnCode: true });
     await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
