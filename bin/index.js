@@ -13418,35 +13418,35 @@ async function run() {
     const defaultBranchName = 'master';
     try {
         console.log('Upgrade started');
-        await (0, exec_1.exec)('ls', ['-la']);
+        await (0, exec_1.getExecOutput)('ls', ['-la']);
         if (await isYarnManager()) {
-            await (0, exec_1.exec)('yarn', ['install']);
-            await (0, exec_1.exec)('yarn', ['global', 'add', 'typescript']);
-            await (0, exec_1.exec)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
+            await (0, exec_1.getExecOutput)('yarn', ['install']);
+            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', 'typescript']);
+            await (0, exec_1.getExecOutput)('yarn', ['global', 'add', '@rehearsal/cli@0.0.34']);
         }
         else {
-            await (0, exec_1.exec)('npm', ['install']);
-            await (0, exec_1.exec)('npm', ['-g', 'install', 'typescript']);
-            await (0, exec_1.exec)('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
+            await (0, exec_1.getExecOutput)('npm', ['install']);
+            await (0, exec_1.getExecOutput)('npm', ['-g', 'install', 'typescript']);
+            await (0, exec_1.getExecOutput)('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
         }
         // If repo is dirty - stash or commit changes (use param)
         //console.log('\nChecking is repo is dirty');
         //await exec('git', ['status']);
         // Stash any changes in the repo after dependencies installation
         console.log('\nStashing all local changes');
-        await (0, exec_1.exec)('git', ['stash', 'push', '-m', stashMessage]);
+        await (0, exec_1.getExecOutput)('git', ['stash', 'push', '-m', stashMessage]);
         // Run rehearsal to have files updated
         // Rehearsal?
         // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
         console.log('\nRunning Rehearsal Upgrade');
-        await (0, exec_1.exec)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
+        await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
         //console.log('\nChecking for changes made by Rehearsal');
         //await exec('git', ['status']);
         // Create a commit with all updated files
         console.log('\nCommitting changes');
-        await (0, exec_1.exec)('git', ['add', '.']);
-        await (0, exec_1.exec)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
-        await (0, exec_1.exec)('git', [
+        await (0, exec_1.getExecOutput)('git', ['add', '.']);
+        await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'yarn.lock']);
+        await (0, exec_1.getExecOutput)('git', [
             '-c',
             `user.name="${gitUserName}"`,
             '-c',
@@ -13457,7 +13457,7 @@ async function run() {
         ]);
         // Pushing changes to the remote Rehearsal's branch
         console.log('\nPushing changes to origin');
-        await (0, exec_1.exec)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
+        await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
         console.log('\nCreating Pull Request');
         console.log(github_1.context.repo);
         const octokit = (0, github_1.getOctokit)(githubToken);

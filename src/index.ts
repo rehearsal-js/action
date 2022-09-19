@@ -1,5 +1,5 @@
 import { getInput, setFailed } from '@actions/core';
-import { exec } from '@actions/exec';
+import { getExecOutput as exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
 import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
@@ -7,7 +7,7 @@ import { RequestError } from '@octokit/request-error';
 
 export async function run(): Promise<void> {
   const basePath = getInput('base-path') || '.';
-  const githubToken = getInput('github-token') || '';
+  const githubToken = getInput('github-token') || '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';
   const gitUserName = getInput('git-user-name') || 'rehearsal[bot]';
   const gitUserEmail = getInput('git-user-email') || 'rehearsal[bot]@users.noreply.github.com';
 
