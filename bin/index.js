@@ -13439,7 +13439,7 @@ async function run() {
         // Rehearsal?
         // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
         console.log('\nRunning Rehearsal Upgrade');
-        await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
+        //await exec('rehearsal', ['upgrade', '--dry_run', `-s "${baseDir}"`]);
         //console.log('\nChecking for changes made by Rehearsal');
         //await exec('git', ['status']);
         // Create a commit with all updated files
