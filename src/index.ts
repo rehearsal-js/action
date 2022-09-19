@@ -21,7 +21,7 @@ export async function run(): Promise<void> {
 
   try {
     console.log('Upgrade started');
-    
+
     await exec('ls', ['-la']);
 
     if (await isYarnManager()) {
@@ -82,7 +82,6 @@ export async function run(): Promise<void> {
     });
 
     console.log('\nUpgrade finished');
-
   } catch (error) {
     if (error instanceof RequestError) {
       console.log('Pull Request is already exists');

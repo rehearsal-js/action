@@ -1,1 +1,3 @@
-export function a() { const b = "a"; }
+export function a() {
+  const b = 'a';
+}
