@@ -1,4 +1,4 @@
-import { getInput, setFailed } from '@actions/core';
+import {endGroup, getInput, setFailed, startGroup} from '@actions/core';
 import { exec } from '@actions/exec';
 import { create as createGlobber } from '@actions/glob';
 import { context, getOctokit } from '@actions/github';
@@ -20,10 +20,10 @@ export async function run(): Promise<void> {
   const defaultBranchName = 'master';
 
   try {
-    console.log('Upgrade started');
+    startGroup('Upgrade started');
 
-    await exec('ls', ['-la']);
-
+    // Installing project dependencies
+    console.log('\nStashing all local changes');
     if (await isYarnManager()) {
       await exec('yarn', ['install']);
       await exec('yarn', ['global', 'add', 'typescript']);
@@ -33,10 +33,12 @@ export async function run(): Promise<void> {
       await exec('npm', ['-g', 'install', 'typescript']);
       await exec('npm', ['-g', 'install', '@rehearsal/cli@0.0.34']);
     }
+    endGroup();
 
     // Stash any changes in the repo after dependencies installation
-    console.log('\nStashing all local changes');
+    startGroup('\nStashing all local changes');
     await exec('git', ['stash', 'push', '-m', stashMessage], { ignoreReturnCode: true });
+    endGroup();
 
     // Run rehearsal to have files updated
     // TODO: Bundled rehearsal package to index.js and run use: rehearsal.parseAsync(['node', 'rehearsal', 'upgrade', '-s', baseDir]);
@@ -66,8 +68,9 @@ export async function run(): Promise<void> {
     await exec('git', ['push', 'origin', `${defaultBranchName}:${branchName}`, '--force']);
 
     console.log('\nCreating Pull Request');
-    console.log(context.repo);
     const octokit = getOctokit(githubToken);
+    
+    
     octokit.rest.pulls.create({
       ...context.repo,
       title: commitMessage,
