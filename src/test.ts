@@ -1,1 +1,3 @@
-export function a(): void { const b = 'a'; }
+export function a(): void {
+  const b = 'a';
+}
