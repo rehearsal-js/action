@@ -1,0 +1,130 @@
+{
+  "version": "2.1.0",
+  "$schema": "http://json.schemastore.org/sarif-2.1.0-rtm.4",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "@rehearsal/upgrade",
+          "informationUri": "https://github.com/rehearsal-js/rehearsal-js",
+          "rules": [
+            {
+              "id": "TS6133",
+              "name": "TS6133",
+              "shortDescription": {
+                "text": "'b' is declared but its value is never read."
+              },
+              "helpUri": ""
+            }
+          ]
+        }
+      },
+      "artifacts": [
+        {
+          "location": {
+            "uri": "/home/runner/work/action/action/test/test.ts"
+          },
+          "roles": [
+            "analysisTarget",
+            "modified"
+          ],
+          "properties": {
+            "fixed": true,
+            "hintAdded": true
+          }
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "TS6133",
+          "ruleIndex": 0,
+          "level": "error",
+          "baselineState": "updated",
+          "kind": "review",
+          "message": {
+            "text": "The variable 'b' is never read or used. Remove the variable or use it."
+          },
+          "analysisTarget": {
+            "uri": "/home/runner/work/action/action/test/test.ts"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/work/action/action/test/test.ts",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 9
+                },
+                "properties": {
+                  "code": " b",
+                  "codeFixAction": "delete",
+                  "roles": [
+                    "analysisTarget",
+                    "modified"
+                  ]
+                }
+              }
+            }
+          ],
+          "relatedLocations": [],
+          "properties": {
+            "fixed": true,
+            "fixes": [
+              {
+                "fileName": "/home/runner/work/action/action/test/test.ts",
+                "code": " b",
+                "codeFixAction": "delete"
+              }
+            ]
+          }
+        },
+        {
+          "ruleId": "TS6133",
+          "ruleIndex": 0,
+          "level": "error",
+          "baselineState": "unchanged",
+          "kind": "informational",
+          "message": {
+            "text": "The variable 'b' is never read or used. Remove the variable or use it."
+          },
+          "analysisTarget": {
+            "uri": "/home/runner/work/action/action/test/test.ts"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/runner/work/action/action/test/test.ts",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 11
+                },
+                "properties": {
+                  "roles": [
+                    "analysisTarget",
+                    "unmodified"
+                  ]
+                }
+              }
+            }
+          ],
+          "relatedLocations": [],
+          "properties": {
+            "fixed": false,
+            "fixes": []
+          }
+        }
+      ],
+      "automationDetails": {
+        "description": {
+          "text": "This is the run of @rehearsal/upgrade on your product against TypeScript 4.9.1-beta at 2022-10-06T18:04:14.219Z"
+        }
+      }
+    }
+  ]
+}

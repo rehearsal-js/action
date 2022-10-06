@@ -1,0 +1,90 @@
+{
+  "summary": {
+    "projectName": "@rehearsal/action",
+    "tsVersion": "4.9.1-beta",
+    "timestamp": "2022-10-06T18:04:14.219Z",
+    "basePath": "/home/runner/work/action/action/test",
+    "uniqueErrors": 1,
+    "totalErrors": 2,
+    "totalErrorsList": {
+      "6133": 2
+    },
+    "fixedErrors": 1,
+    "fixedErrorsList": {
+      "6133": 1
+    },
+    "files": 1,
+    "filesList": [
+      "/test.ts"
+    ]
+  },
+  "items": [
+    {
+      "analysisTarget": "/home/runner/work/action/action/test/test.ts",
+      "files": {
+        "/home/runner/work/action/action/test/test.ts": {
+          "fileName": "/home/runner/work/action/action/test/test.ts",
+          "location": {
+            "line": 2,
+            "character": 9
+          },
+          "fixed": true,
+          "code": " b",
+          "codeFixAction": "delete",
+          "hintAdded": false,
+          "roles": [
+            "analysisTarget",
+            "modified"
+          ]
+        }
+      },
+      "errorCode": 6133,
+      "category": "Error",
+      "message": "'b' is declared but its value is never read.",
+      "hint": "The variable 'b' is never read or used. Remove the variable or use it.",
+      "fixed": true,
+      "nodeKind": "Identifier",
+      "nodeText": "b",
+      "helpUrl": "https://stackoverflow.com/search?tab=votes&q=TS6133",
+      "nodeLocation": {
+        "start": 29,
+        "length": 1,
+        "line": 1,
+        "character": 8
+      }
+    },
+    {
+      "analysisTarget": "/home/runner/work/action/action/test/test.ts",
+      "files": {
+        "/home/runner/work/action/action/test/test.ts": {
+          "fileName": "/home/runner/work/action/action/test/test.ts",
+          "location": {
+            "line": 2,
+            "character": 11
+          },
+          "fixed": false,
+          "hint": "The variable 'b' is never read or used. Remove the variable or use it.",
+          "hintAdded": true,
+          "roles": [
+            "analysisTarget",
+            "unmodified"
+          ]
+        }
+      },
+      "errorCode": 6133,
+      "category": "Error",
+      "message": "'b' is declared but its value is never read.",
+      "hint": "The variable 'b' is never read or used. Remove the variable or use it.",
+      "fixed": false,
+      "nodeKind": "Identifier",
+      "nodeText": "b",
+      "helpUrl": "https://stackoverflow.com/search?tab=votes&q=TS6133",
+      "nodeLocation": {
+        "start": 31,
+        "length": 1,
+        "line": 1,
+        "character": 10
+      }
+    }
+  ]
+}
