@@ -32,7 +32,7 @@ jobs:
     name: Run Upgrade
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: rehearsal-js/action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
