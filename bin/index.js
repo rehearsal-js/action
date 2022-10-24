@@ -44,6 +44,8 @@ async function run() {
     const gitUserEmail = (0, core_1.getInput)('git-user-email');
     const pullBranch = (0, core_1.getInput)('pull-request-branch');
     const pullDraft = (0, core_1.getBooleanInput)('pull-request-draft');
+    (0, core_1.debug)('Test debug');
+    (0, core_1.info)('Test info');
     try {
         await (0, core_1.group)('Install project dependencies', async () => {
             const pm = await (0, pm_1.detectPackageManager)();

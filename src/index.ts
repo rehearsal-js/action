@@ -1,4 +1,4 @@
-import { getBooleanInput, getInput, group, info, setFailed } from '@actions/core';
+import { getBooleanInput, getInput, group, info, setFailed, debug } from '@actions/core';
 import { getExecOutput as exec } from '@actions/exec';
 import { context, getOctokit } from '@actions/github';
 import { resolve } from 'path';
@@ -12,6 +12,9 @@ export async function run(): Promise<void> {
   const gitUserEmail = getInput('git-user-email');
   const pullBranch = getInput('pull-request-branch');
   const pullDraft = getBooleanInput('pull-request-draft');
+
+  debug('Test debug');
+  info('Test info');
 
   try {
     await group('Install project dependencies', async () => {
