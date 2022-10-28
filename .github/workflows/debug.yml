@@ -12,4 +12,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-path: './test'
+        env:
+          ACTIONS_STEP_DEBUG: true
       - uses: lhotari/action-upterm@v1

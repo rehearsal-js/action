@@ -44,6 +44,8 @@ async function run() {
     const gitUserEmail = (0, core_1.getInput)('git-user-email');
     const pullBranch = (0, core_1.getInput)('pull-request-branch');
     const pullDraft = (0, core_1.getBooleanInput)('pull-request-draft');
+    const pullTitleTemplate = (0, core_1.getInput)('pull-request-title');
+    const pullBodyTemplate = (0, core_1.getInput)('pull-request-body');
     try {
         await (0, core_1.group)('Install project dependencies', async () => {
             const pm = await (0, pm_1.detectPackageManager)();
@@ -71,8 +73,12 @@ async function run() {
         await (0, core_1.group)('Run Rehearsal Upgrade', async () => {
             await (0, exec_1.getExecOutput)('rehearsal', ['upgrade', baseDir, '--report', 'json,sarif', '--dryRun']);
         });
-        const baseBranch = (_b = (_a = github_1.context.payload) === null || _a === void 0 ? void 0 : _a.repository) === null || _b === void 0 ? void 0 : _b.default_branch;
-        const pullInfo = await generatePullRequestTitleAndBody(baseDir);
+        const report = await readReport(baseDir);
+        if (!(report === null || report === void 0 ? void 0 : report.items)) {
+            (0, core_1.info)(`Congrats! The code looks ready for good! No changes needed`);
+            process.exit(0);
+        }
+        const pullInfo = await generatePullRequestTitleAndBody(report, pullTitleTemplate, pullBodyTemplate);
         await (0, core_1.group)('Commit changes (except package.json and *.lock files)', async () => {
             await (0, exec_1.getExecOutput)('git', ['add', '.'], { ignoreReturnCode: true });
             await (0, exec_1.getExecOutput)('git', ['reset', '--', 'package.json', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']);
@@ -86,6 +92,7 @@ async function run() {
                 `"${pullInfo.title}"`,
             ], { ignoreReturnCode: true });
         });
+        const baseBranch = (_b = (_a = github_1.context.payload) === null || _a === void 0 ? void 0 : _a.repository) === null || _b === void 0 ? void 0 : _b.default_branch;
         await (0, core_1.group)(`Push changes to the ${pullBranch} branch`, async () => {
             await (0, exec_1.getExecOutput)('git', ['push', 'origin', `${baseBranch}:${pullBranch}`, '--force']);
         });
@@ -124,46 +131,70 @@ async function run() {
 exports.run = run;
 run();
 /**
+ * Reads a report object from the file
+ */
+async function readReport(baseDir) {
+    return await Promise.resolve().then(() => __importStar(require((0, path_1.resolve)(baseDir, '.rehearsal', 'report.json'))));
+}
+/**
  * Generates a Pull Request description based on the report provided by Rehearsal
  */
-async function generatePullRequestTitleAndBody(baseDir) {
-    var _a, _b, _c, _d, _e, _f, _g;
-    const report = await Promise.resolve().then(() => __importStar(require((0, path_1.resolve)(baseDir, '.rehearsal', 'report.json'))));
+async function generatePullRequestTitleAndBody(report, pullTitleTemplate, pullBodyTemplate) {
+    var _a, _b, _c, _d, _e, _f;
+    const basePath = ((_a = report === null || report === void 0 ? void 0 : report.summary) === null || _a === void 0 ? void 0 : _a.basePath) || '';
     const items = (report === null || report === void 0 ? void 0 : report.items) || [];
     const tables = { fixed: [], todos: [] };
     for (const item of items) {
         const target = (item === null || item === void 0 ? void 0 : item.fixed) ? tables.fixed : tables.todos;
         target.push({
             error: item === null || item === void 0 ? void 0 : item.errorCode,
-            file: (_a = item === null || item === void 0 ? void 0 : item.analysisTarget) === null || _a === void 0 ? void 0 : _a.slice(baseDir.length),
+            file: (_b = item === null || item === void 0 ? void 0 : item.analysisTarget) === null || _b === void 0 ? void 0 : _b.slice(basePath),
             message: (item === null || item === void 0 ? void 0 : item.fixed) ? item === null || item === void 0 ? void 0 : item.message : item === null || item === void 0 ? void 0 : item.hint,
-            code: (_b = item === null || item === void 0 ? void 0 : item.nodeText) === null || _b === void 0 ? void 0 : _b.trim(),
+            code: (_c = item === null || item === void 0 ? void 0 : item.nodeText) === null || _c === void 0 ? void 0 : _c.trim(),
             helpUrl: item === null || item === void 0 ? void 0 : item.helpUrl,
-            line: (_c = item === null || item === void 0 ? void 0 : item.nodeLocation) === null || _c === void 0 ? void 0 : _c.line,
+            line: (_d = item === null || item === void 0 ? void 0 : item.nodeLocation) === null || _d === void 0 ? void 0 : _d.line,
         });
     }
-    const tsVersion = (_f = (_e = (_d = report === null || report === void 0 ? void 0 : report.summary) === null || _d === void 0 ? void 0 : _d.tsVersion) === null || _e === void 0 ? void 0 : _e.split('-')) === null || _f === void 0 ? void 0 : _f.shift(); // Version without `beta` suffix
-    const title = `chore(rehearsal): compatibility for upcoming TypeScript ${tsVersion}`;
-    let body = ``;
-    body += `### Summary:\n`;
-    body += `Typescript Version: ${tsVersion}\n`;
-    body += `Files updated: ${(_g = report === null || report === void 0 ? void 0 : report.summary) === null || _g === void 0 ? void 0 : _g.files}\n`;
-    body += `\n`;
-    body += `### Fixed:\n`;
-    body += `| Error | File | Code | Action | Message |\n`;
-    body += `| - | - | - | - | - |\n`;
+    const tsVersion = getVersionWithoutBuild(((_e = report === null || report === void 0 ? void 0 : report.summary) === null || _e === void 0 ? void 0 : _e.tsVersion) || '');
+    let summary = ``;
+    summary += `Typescript Version: ${tsVersion}\n`;
+    summary += `Files updated: ${(_f = report === null || report === void 0 ? void 0 : report.summary) === null || _f === void 0 ? void 0 : _f.files}\n`;
+    let fixedItems = ``;
+    fixedItems += `| Error | File | Code | Action | Message |\n`;
+    fixedItems += `| - | - | - | - | - |\n`;
     for (const row of tables.fixed) {
-        body += `| ${row.error} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
+        fixedItems += `| ${row.error} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
     }
-    body += `\n`;
-    body += `### To do:\n`;
-    body += `| Error | File | Code | Issue | Message |\n`;
-    body += `| - | - | - | - | - |\n`;
+    let todoItems = ``;
+    todoItems += `| Error | File | Code | Issue | Message |\n`;
+    todoItems += `| - | - | - | - | - |\n`;
     for (const row of tables.todos) {
         const errorText = row.helpUrl ? `[${row.error}](${row.helpUrl})` : row.error;
-        body += `| ${errorText} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
+        todoItems += `| ${errorText} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
     }
-    return { title, body };
+    return {
+        title: replaceAll(pullTitleTemplate, {
+            '{tsVersion}': tsVersion,
+        }),
+        body: replaceAll(pullBodyTemplate, {
+            '{summary}': summary,
+            '{fixedItems}': fixedItems,
+            '{todoItems}': todoItems,
+        }),
+    };
+}
+/**
+ * Returns the numeric version without build (-beta, -rc, -dev, etc.)
+ */
+function getVersionWithoutBuild(versionWithBuilds) {
+    var _a;
+    return ((_a = versionWithBuilds.split('-')) === null || _a === void 0 ? void 0 : _a.shift()) || '';
+}
+/**
+ * Replaces all object's keys with their values in the subject string
+ */
+function replaceAll(subject, replacements) {
+    return subject.replace(/{\w+}/g, (placeholder) => placeholder in replacements ? replacements[placeholder] : placeholder);
 }
 
 
