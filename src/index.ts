@@ -12,6 +12,8 @@ export async function run(): Promise<void> {
   const gitUserEmail = getInput('git-user-email');
   const pullBranch = getInput('pull-request-branch');
   const pullDraft = getBooleanInput('pull-request-draft');
+  const pullTitleTemplate = getInput('pull-request-title');
+  const pullBodyTemplate = getInput('pull-request-body');
 
   try {
     await group('Install project dependencies', async () => {
@@ -43,9 +45,14 @@ export async function run(): Promise<void> {
       await exec('rehearsal', ['upgrade', baseDir, '--report', 'json,sarif', '--dryRun']);
     });
 
-    const baseBranch = context.payload?.repository?.default_branch as string;
-    const pullInfo = await generatePullRequestTitleAndBody(baseDir);
+    const report = await readReport(baseDir);
 
+    if (!report?.items) {
+      info(`Congrats! The code looks ready for good! No changes needed`);
+      process.exit(0);
+    }
+
+    const pullInfo = await generatePullRequestTitleAndBody(report, pullTitleTemplate, pullBodyTemplate);
     await group('Commit changes (except package.json and *.lock files)', async () => {
       await exec('git', ['add', '.'], { ignoreReturnCode: true });
       await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']);
@@ -64,6 +71,7 @@ export async function run(): Promise<void> {
       );
     });
 
+    const baseBranch = context.payload?.repository?.default_branch as string;
     await group(`Push changes to the ${pullBranch} branch`, async () => {
       await exec('git', ['push', 'origin', `${baseBranch}:${pullBranch}`, '--force']);
     });
@@ -71,13 +79,13 @@ export async function run(): Promise<void> {
     await group(`Create Pull Request`, async () => {
       try {
         const headBranch = `${context.repo.owner}:${pullBranch}`;
-        
+
         const pulls = getOctokit(githubToken).rest.pulls;
         const pullBase = { ...context.repo, base: baseBranch, head: headBranch };
 
         const response = await pulls.list({ ...pullBase, state: 'open' });
         const pullNumber = response.data?.[0]?.number;
-        
+
         if (pullNumber) {
           const { data } = await pulls.update({ ...pullBase, ...pullInfo, pull_number: pullNumber });
           info(`Pull Request '#${data.number} ${pullInfo.title}' updated`);
@@ -102,10 +110,21 @@ export async function run(): Promise<void> {
 run();
 
 /**
+ * Reads a report object from the file
+ */
+async function readReport(baseDir: string): Promise<any> {
+  return await import(resolve(baseDir, '.rehearsal', 'report.json'));
+}
+
+/**
  * Generates a Pull Request description based on the report provided by Rehearsal
  */
-async function generatePullRequestTitleAndBody(baseDir: string): Promise<{ title: string; body: string }> {
-  const report = await import(resolve(baseDir, '.rehearsal', 'report.json'));
+async function generatePullRequestTitleAndBody(
+  report: any,
+  pullTitleTemplate: string,
+  pullBodyTemplate: string
+): Promise<{ title: string; body: string }> {
+  const basePath = report?.summary?.basePath || '';
 
   type TableRow = { error: string; file: string; message: string; code: string; helpUrl: string; line: string };
 
@@ -116,7 +135,7 @@ async function generatePullRequestTitleAndBody(baseDir: string): Promise<{ title
 
     target.push({
       error: item?.errorCode,
-      file: item?.analysisTarget?.slice(baseDir.length),
+      file: item?.analysisTarget?.slice(basePath),
       message: item?.fixed ? item?.message : item?.hint,
       code: item?.nodeText?.trim(),
       helpUrl: item?.helpUrl,
@@ -124,32 +143,51 @@ async function generatePullRequestTitleAndBody(baseDir: string): Promise<{ title
     });
   }
 
-  const tsVersion = report?.summary?.tsVersion?.split('-')?.shift(); // Version without `beta` suffix
-  const title = `chore(rehearsal): compatibility for upcoming TypeScript ${tsVersion}`;
+  const tsVersion: string = getVersionWithoutBuild(report?.summary?.tsVersion || '');
 
-  let body = ``;
+  let summary = ``;
+  summary += `Typescript Version: ${tsVersion}\n`;
+  summary += `Files updated: ${report?.summary?.files}\n`;
 
-  body += `### Summary:\n`;
-  body += `Typescript Version: ${tsVersion}\n`;
-  body += `Files updated: ${report?.summary?.files}\n`;
-
-  body += `\n`;
-  body += `### Fixed:\n`;
-  body += `| Error | File | Code | Action | Message |\n`;
-  body += `| - | - | - | - | - |\n`;
+  let fixedItems = ``;
+  fixedItems += `| Error | File | Code | Action | Message |\n`;
+  fixedItems += `| - | - | - | - | - |\n`;
   for (const row of tables.fixed) {
-    body += `| ${row.error} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
+    fixedItems += `| ${row.error} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
   }
 
-  body += `\n`;
-  body += `### To do:\n`;
-  body += `| Error | File | Code | Issue | Message |\n`;
-  body += `| - | - | - | - | - |\n`;
-
+  let todoItems = ``;
+  todoItems += `| Error | File | Code | Issue | Message |\n`;
+  todoItems += `| - | - | - | - | - |\n`;
   for (const row of tables.todos) {
     const errorText = row.helpUrl ? `[${row.error}](${row.helpUrl})` : row.error;
-    body += `| ${errorText} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
+    todoItems += `| ${errorText} | ${row.file} | ${row.code} | ... | ${row.message} |\n`;
   }
 
-  return { title, body };
+  return {
+    title: replaceAll(pullTitleTemplate, {
+      '{tsVersion}': tsVersion,
+    }),
+    body: replaceAll(pullBodyTemplate, {
+      '{summary}': summary,
+      '{fixedItems}': fixedItems,
+      '{todoItems}': todoItems,
+    }),
+  };
+}
+
+/**
+ * Returns the numeric version without build (-beta, -rc, -dev, etc.)
+ */
+function getVersionWithoutBuild(versionWithBuilds: string): string {
+  return versionWithBuilds.split('-')?.shift() || '';
+}
+
+/**
+ * Replaces all object's keys with their values in the subject string
+ */
+function replaceAll(subject: string, replacements: { [key: string]: string }): string {
+  return subject.replace(/{\w+}/g, (placeholder) =>
+    placeholder in replacements ? replacements[placeholder] : placeholder
+  );
 }

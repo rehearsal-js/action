@@ -27,7 +27,15 @@ inputs:
     required: false
   pull-request-draft:
     description: 'Create a draft Pull Request'
-    default: false
+    default: ''
+    required: false
+  pull-request-title:
+    description: 'Pull Request title (placeholders available: {tsVersion})'
+    default: 'chore(rehearsal): compatibility for upcoming TypeScript {tsVersion}'
+    required: false
+  pull-request-body:
+    description: 'Pull Request body (placeholders available: {summary}, {fixedItems}, {todoItems})'
+    default: '## Summary\n{summary}\n\n##Fixed\n{fixedItems}\n\n##To do\n{todoItems}'
     required: false
 
 runs:
