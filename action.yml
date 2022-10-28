@@ -27,7 +27,7 @@ inputs:
     required: false
   pull-request-draft:
     description: 'Create a draft Pull Request'
-    default: ''
+    default: 'false'
     required: false
   pull-request-title:
     description: 'Pull Request title (placeholders available: {tsVersion})'
