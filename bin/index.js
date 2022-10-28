@@ -64,8 +64,8 @@ async function run() {
                 }
                 case 'npm': {
                     await (0, exec_1.getExecOutput)('npm', ['install']);
-                    await (0, exec_1.getExecOutput)('npm', ['install', '-g', 'typescript']);
-                    await (0, exec_1.getExecOutput)('npm', ['install', '-g', '@rehearsal/cli']);
+                    await (0, exec_1.getExecOutput)('npm', ['install', 'typescript', '-g',]);
+                    await (0, exec_1.getExecOutput)('npm', ['install', '@rehearsal/cli', '-g']);
                 }
             }
         });
@@ -215,9 +215,9 @@ const glob_1 = __nccwpck_require__(8090);
  */
 async function detectPackageManager() {
     const checkLockFile = async (binFileName, lockFileName) => {
-        return (0, glob_1.create)(`**/${lockFileName}`)
+        return (0, glob_1.create)(`${lockFileName}`)
             .then((g) => g.glob())
-            .then((f) => (f ? binFileName : null));
+            .then((f) => (f.length ? binFileName : null));
     };
     const checkBinaryFile = async (binFileName) => {
         return (0, exec_1.getExecOutput)(binFileName, ['--version'], { silent: true })
@@ -227,7 +227,7 @@ async function detectPackageManager() {
     return await Promise.all([
         checkLockFile('yarn', 'yarn.lock'),
         checkLockFile('pnpm', 'pnpm-lock.yaml'),
-        checkLockFile('npm', 'package-lock.yaml'),
+        checkLockFile('npm', 'package-lock.json'),
         checkBinaryFile('yarn'),
         checkBinaryFile('pnpm'),
     ]).then(([yarnLock, pnpmLock, npmLock, yarnBin, pnpmBin]) => {

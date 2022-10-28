@@ -9,9 +9,9 @@ export type PackageManager = 'npm' | 'pnpm' | 'yarn';
  */
 export async function detectPackageManager(): Promise<PackageManager> {
   const checkLockFile = async (binFileName: PackageManager, lockFileName: string): Promise<PackageManager | null> => {
-    return createGlobber(`**/${lockFileName}`)
+    return createGlobber(`${lockFileName}`)
       .then((g) => g.glob())
-      .then((f) => (f ? binFileName : null));
+      .then((f) => (f.length ? binFileName : null));
   };
 
   const checkBinaryFile = async (binFileName: PackageManager): Promise<PackageManager | null> => {
@@ -23,7 +23,7 @@ export async function detectPackageManager(): Promise<PackageManager> {
   return await Promise.all([
     checkLockFile('yarn', 'yarn.lock'),
     checkLockFile('pnpm', 'pnpm-lock.yaml'),
-    checkLockFile('npm', 'package-lock.yaml'),
+    checkLockFile('npm', 'package-lock.json'),
     checkBinaryFile('yarn'),
     checkBinaryFile('pnpm'),
   ]).then(([yarnLock, pnpmLock, npmLock, yarnBin, pnpmBin]) => {

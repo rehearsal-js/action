@@ -33,8 +33,8 @@ export async function run(): Promise<void> {
         }
         case 'npm': {
           await exec('npm', ['install']);
-          await exec('npm', ['install', '-g', 'typescript']);
-          await exec('npm', ['install', '-g', '@rehearsal/cli']);
+          await exec('npm', ['install', 'typescript', '-g',]);
+          await exec('npm', ['install', '@rehearsal/cli', '-g']);
         }
       }
     });
