@@ -35,7 +35,15 @@ inputs:
     required: false
   pull-request-body:
     description: 'Pull Request body (placeholders available: {summary}, {fixedItems}, {todoItems})'
-    default: '## Summary\n{summary}\n\n##Fixed\n{fixedItems}\n\n##To do\n{todoItems}'
+    default: |
+      ## Summary
+      {summary}
+        
+      ## Fixed
+      {fixedItems}
+        
+      ## To Do
+      {todoItems}
     required: false
 
 runs:
