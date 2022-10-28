@@ -12,3 +12,16 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           base-path: './test'
+          pull-request-title: 'chore: compatibility for upcoming TypeScript {tsVersion}'
+          pull-request-body: |
+            ## Summary
+            {summary}
+            
+            ## Fixed
+            {fixedItems}
+            
+            ## To do
+            {todoItems}
+            
+            ## Tests
+            Only existing tests
