@@ -49,7 +49,7 @@ export async function run(): Promise<void> {
 
     if (!report?.items?.length) {
       const tsVersion: string = getVersionWithoutBuild(report?.summary?.tsVersion || '');
-      
+
       info(`Congrats! The code looks ready for TypeScript ${tsVersion}! No changes needed`);
       process.exit(0);
     }
