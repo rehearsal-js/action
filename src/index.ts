@@ -33,7 +33,7 @@ export async function run(): Promise<void> {
         }
         case 'npm': {
           await exec('npm', ['install']);
-          await exec('npm', ['install', 'typescript', '-g',]);
+          await exec('npm', ['install', 'typescript', '-g']);
           await exec('npm', ['install', '@rehearsal/cli', '-g']);
         }
       }
@@ -47,12 +47,15 @@ export async function run(): Promise<void> {
 
     const report = await readReport(baseDir);
 
-    if (!report?.items) {
-      info(`Congrats! The code looks ready for good! No changes needed`);
+    if (!report?.items?.length) {
+      const tsVersion: string = getVersionWithoutBuild(report?.summary?.tsVersion || '');
+      
+      info(`Congrats! The code looks ready for TypeScript ${tsVersion}! No changes needed`);
       process.exit(0);
     }
 
     const pullInfo = await generatePullRequestTitleAndBody(report, pullTitleTemplate, pullBodyTemplate);
+
     await group('Commit changes (except package.json and *.lock files)', async () => {
       await exec('git', ['add', '.'], { ignoreReturnCode: true });
       await exec('git', ['reset', '--', 'package.json', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']);
@@ -72,6 +75,7 @@ export async function run(): Promise<void> {
     });
 
     const baseBranch = context.payload?.repository?.default_branch as string;
+
     await group(`Push changes to the ${pullBranch} branch`, async () => {
       await exec('git', ['push', 'origin', `${baseBranch}:${pullBranch}`, '--force']);
     });
