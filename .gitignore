@@ -13,4 +13,6 @@ dist/
 node_modules/
 tmp/
 
-**SCRATCH**
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
